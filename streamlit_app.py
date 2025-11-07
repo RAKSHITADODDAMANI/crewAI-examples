@@ -1,13 +1,13 @@
 import os
 import streamlit as st
 from crewai import Agent, Task, Crew
-from crewai.llms import Groq
+from langchain_groq import ChatGroq  # ✅ Correct import
 
-# --- Streamlit App Title ---
+# --- Streamlit UI setup ---
 st.set_page_config(page_title="Agentic AI Portfolio Generator", page_icon="🤖", layout="centered")
 st.title("🤖 Agentic AI Portfolio Generator")
 
-# --- Sidebar Configuration ---
+# --- Sidebar: API Key ---
 st.sidebar.header("🔑 API Key Setup")
 groq_api_key = st.sidebar.text_input("Enter your Groq API Key:", type="password")
 
@@ -16,7 +16,10 @@ if groq_api_key:
 
 # --- Initialize LLM (GROQ) ---
 try:
-    llm = Groq(api_key=groq_api_key, model="mixtral-8x7b-32768")
+    llm = ChatGroq(
+        groq_api_key=groq_api_key,
+        model_name="mixtral-8x7b-32768"  # You can also try "llama3-70b-8192"
+    )
     st.success("✅ LLM initialized successfully with Groq.")
 except Exception as e:
     st.error(f"❌ LLM initialization failed: {e}")
@@ -24,7 +27,6 @@ except Exception as e:
 
 # --- Input Section ---
 st.subheader("🧠 Enter Your Project Information")
-
 project_title = st.text_input("Project Title:")
 project_description = st.text_area("Project Description:")
 project_tech = st.text_input("Technologies Used (comma-separated):")
@@ -44,7 +46,7 @@ if generate_button:
                 llm=llm
             )
 
-            # Create Task for the Agent
+            # Create a Task
             task = Task(
                 description=f"Generate a polished project portfolio entry for the following project:\n\n"
                             f"Title: {project_title}\n"
@@ -54,11 +56,11 @@ if generate_button:
                 agent=generator_agent
             )
 
-            # Create Crew and Execute
+            # Run Crew
             crew = Crew(agents=[generator_agent], tasks=[task])
             result = crew.kickoff()
 
-            # Display Result
+            # Show result
             st.subheader("📘 Generated Portfolio Summary")
             st.write(result)
 

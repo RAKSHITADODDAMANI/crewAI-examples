@@ -1,6 +1,4 @@
-crewai[tools]
-crewai[openai]
-crewai
-crewai[tools]
 streamlit
+crewai
+openai
 python-dotenv

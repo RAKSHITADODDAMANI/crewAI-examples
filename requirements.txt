@@ -1,3 +1,5 @@
+crewai[tools]
+crewai[openai]
 crewai
 crewai[tools]
 streamlit

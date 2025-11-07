@@ -1,67 +1,65 @@
 import os
 import streamlit as st
-from crewai import Agent, Task, Crew, LLM
+from crewai import Agent, Task, Crew
+from crewai.llms import Groq
 
+# --- Streamlit App Title ---
+st.set_page_config(page_title="Agentic AI Portfolio Generator", page_icon="🤖", layout="centered")
+st.title("🤖 Agentic AI Portfolio Generator")
 
-st.set_page_config(page_title="💼 AI Job Posting Generator", page_icon="💼")
-# ✅ Force CrewAI to use Groq instead of OpenAI
-os.environ["CREWAI_LLM_PROVIDER"] = "groq"
-# ----------------------------
-# Step 1: Initialize LLM safely
-# ----------------------------
-GROQ_KEY = os.getenv("GROQ_API_KEY")
+# --- Sidebar Configuration ---
+st.sidebar.header("🔑 API Key Setup")
+groq_api_key = st.sidebar.text_input("Enter your Groq API Key:", type="password")
 
-if not GROQ_KEY:
-    st.error("🚨 Missing Groq API Key! Please add it in Streamlit Cloud → Settings → Secrets.")
+if groq_api_key:
+    os.environ["GROQ_API_KEY"] = groq_api_key
+
+# --- Initialize LLM (GROQ) ---
+try:
+    llm = Groq(api_key=groq_api_key, model="mixtral-8x7b-32768")
+    st.success("✅ LLM initialized successfully with Groq.")
+except Exception as e:
+    st.error(f"❌ LLM initialization failed: {e}")
     st.stop()
-else:
-    try:
-        # ✅ Initialize Groq LLM
-        llm = LLM(
-            model="mixtral-8x7b",
-            api_key=GROQ_KEY
-        )
-        st.success("✅ LLM initialized successfully with Groq.")
-    except Exception as e:
-        st.error(f"❌ LLM initialization failed: {e}")
-        st.stop()
 
-# ----------------------------
-# Step 2: App UI
-# ----------------------------
-st.title("💼 AI Job Posting Generator")
+# --- Input Section ---
+st.subheader("🧠 Enter Your Project Information")
 
-job_title = st.text_input("Enter Job Title:", "Data Scientist")
-skills = st.text_area("Required Skills:", "Python, SQL, Machine Learning")
-company = st.text_input("Company Name:", "TechNova Analytics Pvt. Ltd.")
-experience = st.selectbox("Experience Level:", ["Fresher", "Mid-level", "Senior"])
-job_type = st.selectbox("Job Type:", ["Full-time", "Part-time", "Internship"])
+project_title = st.text_input("Project Title:")
+project_description = st.text_area("Project Description:")
+project_tech = st.text_input("Technologies Used (comma-separated):")
+generate_button = st.button("🚀 Generate Portfolio Summary")
 
-if st.button("🚀 Generate Job Description"):
-    with st.spinner("Generating... Please wait..."):
+# --- Generate Portfolio Section ---
+if generate_button:
+    if not project_title or not project_description or not project_tech:
+        st.warning("⚠️ Please fill in all fields before generating the portfolio.")
+    else:
         try:
-            # Step 3: Define Agent and Task
-            agent = Agent(
-                role="HR Assistant",
-                goal=f"Create a professional job description for {job_title} at {company}.",
-                backstory="You are an HR expert experienced in crafting clear and attractive job descriptions.",
-                llm=llm,
+            # Define an AI Agent
+            generator_agent = Agent(
+                role="AI Portfolio Generator",
+                goal="Generate a professional and human-like project portfolio section.",
+                backstory="You are an expert AI agent skilled in creating detailed, realistic project descriptions for technical portfolios.",
+                llm=llm
             )
 
+            # Create Task for the Agent
             task = Task(
-                description=(
-                    f"Write a job description for the role '{job_title}' at {company}. "
-                    f"Required skills: {skills}. Experience level: {experience}. Job type: {job_type}. "
-                    "Include sections for Responsibilities, Requirements, and Benefits."
-                ),
-                expected_output="A clear, formatted job description with bullet points and structure.",
-                agent=agent,
+                description=f"Generate a polished project portfolio entry for the following project:\n\n"
+                            f"Title: {project_title}\n"
+                            f"Description: {project_description}\n"
+                            f"Technologies: {project_tech}\n\n"
+                            f"Format the response with subheadings: Overview, Features, Tools Used, and Outcome.",
+                agent=generator_agent
             )
 
-            crew = Crew(agents=[agent], tasks=[task])
+            # Create Crew and Execute
+            crew = Crew(agents=[generator_agent], tasks=[task])
             result = crew.kickoff()
 
-            st.subheader("📝 Generated Job Description:")
+            # Display Result
+            st.subheader("📘 Generated Portfolio Summary")
             st.write(result)
 
         except Exception as e:

@@ -1,26 +1,28 @@
 import os
 import streamlit as st
-from crewai import LLM
+from crewai import Agent, Task, Crew, LLM
 
-# Get Groq key from environment
+st.set_page_config(page_title="💼 AI Job Posting Generator", page_icon="💼")
+
+# ----------------------------
+# Step 1: Initialize LLM safely
+# ----------------------------
 GROQ_KEY = os.getenv("GROQ_API_KEY")
 
 if not GROQ_KEY:
-    st.error("🚨 Missing Groq API Key! Add it in Streamlit Cloud → Settings → Secrets.")
+    st.error("🚨 Missing Groq API Key! Please add it in Streamlit Cloud → Settings → Secrets.")
     st.stop()
 else:
     try:
-        # ✅ Explicitly specify provider now
+        # ✅ Initialize Groq LLM
         llm = LLM(
             model="mixtral-8x7b",
-            api_key=GROQ_KEY,
-            provider="groq"   # 👈 this is crucial in some builds
+            api_key=GROQ_KEY
         )
         st.success("✅ LLM initialized successfully with Groq.")
     except Exception as e:
         st.error(f"❌ LLM initialization failed: {e}")
         st.stop()
-
 
 # ----------------------------
 # Step 2: App UI

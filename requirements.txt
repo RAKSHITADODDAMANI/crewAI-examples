@@ -1,3 +1,5 @@
+crewai>=0.61.0
+streamlit
 streamlit
 crewai
 openai

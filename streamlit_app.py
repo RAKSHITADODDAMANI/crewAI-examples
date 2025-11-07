@@ -27,7 +27,7 @@ if not OPENAI_KEY:
 try:
     # ✅ Do NOT include provider (CrewAI auto-detects OpenAI)
     llm = LLM(
-        model="gpt-4o-mini",   # you can also use "gpt-3.5-turbo"
+        model="gpt-3.5-turbo",   # you can also use "gpt-3.5-turbo"
         api_key=OPENAI_KEY
     )
 except Exception as e:

@@ -1,8 +1,4 @@
-crewai>=0.61.0
 streamlit
-groq
-streamlit
-crewai>=0.61.0
 crewai
-openai
-python-dotenv
+langchain
+langchain-groq

@@ -2,6 +2,8 @@ import os
 import streamlit as st
 from crewai import Agent, Task, Crew, LLM
 
+os.environ["CREWAI_LLM_PROVIDER"] = "groq"
+
 st.set_page_config(page_title="💼 AI Job Posting Generator", page_icon="💼")
 
 # ----------------------------

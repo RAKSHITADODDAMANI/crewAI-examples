@@ -1,11 +1,21 @@
+import os
 import streamlit as st
-from crewai import Agent, Task, Crew
-from crewai.llm import LLM
+from crewai import Agent, Task, Crew, LLM
 
-st.title("💼 AI Job Posting Generator")
-
-llm = LLM(provider="groq", model="mixtral-8x7b")
-
+# --- Ensure API key exists ---
+OPENAI_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_KEY:
+    st.error("🚨 Missing OpenAI API Key! Please add it in Streamlit Cloud Secrets.")
+else:
+    # --- Initialize CrewAI LLM safely ---
+    try:
+        llm = LLM(
+            provider="openai",          # explicitly set provider
+            model="gpt-4-turbo",        # stable model name
+            api_key=OPENAI_KEY
+        )
+    except Exception as e:
+        st.error(f"❌ LLM initialization failed: {e}")
 
 
 # Create the job posting agent

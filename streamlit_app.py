@@ -26,10 +26,11 @@ if not OPENAI_KEY:
 
 try:
     # ✅ Do NOT include provider (CrewAI auto-detects OpenAI)
-    llm = LLM(
-        model="gpt-3.5-turbo",   # you can also use "gpt-3.5-turbo"
-        api_key=OPENAI_KEY
-    )
+   llm = LLM(
+    provider="groq",
+    model="mixtral-8x7b",
+    api_key=os.getenv("GROQ_API_KEY")
+)
 except Exception as e:
     st.error(f"❌ LLM initialization failed: {e}")
     st.stop()

@@ -51,7 +51,7 @@ if st.button("Generate Job Description"):
             """
 
             response = client.chat.completions.create(
-                model="llama3-8b-8192",
+                model="moonshotai/kimi-k2-instruct-0905",
 
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.7,

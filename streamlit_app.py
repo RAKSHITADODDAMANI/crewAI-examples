@@ -65,9 +65,4 @@ if st.button("Generate Job Description"):
         except Exception as e:
             st.error(f"❌ Error while generating description: {e}")
 
-st.download_button(
-    label="⬇️ Download as TXT",
-    data=result,
-    file_name=f"{job_title.replace(' ', '_')}_JD.txt",
-    mime="text/plain"
-)
+
